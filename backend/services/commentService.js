@@ -1,11 +1,11 @@
-const { supabase } = require('../config/firebase');
+import { supabase } from '../config/firebase.js';
 
 const COMMENTS_TABLE = 'comments';
 
 /**
  * Add a new comment
  */
-async function addComment(repoId, commentData) {
+export const addComment = async (repoId, commentData) => {
   try {
     const { data: newComment, error } = await supabase
       .from(COMMENTS_TABLE)
@@ -25,12 +25,12 @@ async function addComment(repoId, commentData) {
   } catch (err) {
     throw new Error(`Failed to add comment: ${err.message}`);
   }
-}
+};
 
 /**
  * Get all comments for a repo, formatted as a threaded tree
  */
-async function getComments(repoId, sortBy = 'newest') {
+export const getComments = async (repoId, sortBy = 'newest') => {
   try {
     let query = supabase
       .from(COMMENTS_TABLE)
@@ -64,12 +64,12 @@ async function getComments(repoId, sortBy = 'newest') {
   } catch (err) {
     throw new Error(`Failed to fetch comments: ${err.message}`);
   }
-}
+};
 
 /**
  * Increment like count on a comment
  */
-async function likeComment(id) {
+export const likeComment = async (id) => {
   try {
     // Get current likes
     const { data: comment, error: fetchError } = await supabase
@@ -97,12 +97,12 @@ async function likeComment(id) {
   } catch (err) {
     throw new Error(`Failed to like comment: ${err.message}`);
   }
-}
+};
 
 /**
  * Delete a comment and its replies
  */
-async function deleteComment(id) {
+export const deleteComment = async (id) => {
   try {
     // Delete all child replies first
     const { error: deleteChildError } = await supabase
@@ -124,12 +124,12 @@ async function deleteComment(id) {
   } catch (err) {
     throw new Error(`Failed to delete comment: ${err.message}`);
   }
-}
+};
 
 /**
  * Format database comment to API format (camelCase)
  */
-function formatComment(dbComment) {
+const formatComment = (dbComment) => {
   return {
     id: dbComment.id,
     repoId: dbComment.repo_id,
@@ -140,11 +140,4 @@ function formatComment(dbComment) {
     createdAt: dbComment.created_at,
     updatedAt: dbComment.updated_at,
   };
-}
-
-module.exports = {
-  addComment,
-  getComments,
-  likeComment,
-  deleteComment,
 };

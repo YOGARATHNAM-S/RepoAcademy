@@ -1,16 +1,16 @@
-const {
-  addComment: addCommentToDb,
-  getComments: getCommentsFromDb,
-  likeComment: likeCommentInDb,
-  deleteComment: deleteCommentFromDb,
-} = require('../services/commentService');
-const { getRepoById } = require('../services/repoService');
+import {
+  addComment as addCommentToDb,
+  getComments as getCommentsFromDb,
+  likeComment as likeCommentInDb,
+  deleteComment as deleteCommentFromDb,
+} from '../services/commentService.js';
+import { getRepoById } from '../services/repoService.js';
 
 /**
  * POST /api/repo/:id/comment
  * Add a comment to a repository
  */
-const addComment = async (req, res, next) => {
+export const addComment = async (req, res, next) => {
   try {
     const { username, comment, parentId } = req.body;
 
@@ -36,7 +36,7 @@ const addComment = async (req, res, next) => {
  * GET /api/repo/:id/comments
  * Get all comments for a repo (supports ?sort=newest|liked)
  */
-const getComments = async (req, res, next) => {
+export const getComments = async (req, res, next) => {
   try {
     const { sort = 'newest' } = req.query;
     const sortOption = sort === 'liked' ? 'liked' : 'newest';
@@ -52,7 +52,7 @@ const getComments = async (req, res, next) => {
  * PUT /api/comment/:id/like
  * Increment like count on a comment
  */
-const likeComment = async (req, res, next) => {
+export const likeComment = async (req, res, next) => {
   try {
     const result = await likeCommentInDb(req.params.id);
     if (!result) return res.status(404).json({ error: 'Comment not found' });
@@ -62,11 +62,7 @@ const likeComment = async (req, res, next) => {
   }
 };
 
-/**
- * DELETE /api/comment/:id
- * Delete a comment (and its replies)
- */
-const deleteComment = async (req, res, next) => {
+export const deleteComment = async (req, res, next) => {
   try {
     await deleteCommentFromDb(req.params.id);
     res.json({ message: 'Comment deleted' });
@@ -74,5 +70,3 @@ const deleteComment = async (req, res, next) => {
     next(err);
   }
 };
-
-module.exports = { addComment, getComments, likeComment, deleteComment };

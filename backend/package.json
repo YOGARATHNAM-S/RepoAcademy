@@ -2,6 +2,7 @@
   "name": "repolearn-backend",
   "version": "1.0.0",
   "description": "Repolearn backend API server",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

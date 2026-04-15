@@ -1,17 +1,17 @@
-const {
-  addRepo: addRepoToDb,
-  getRepos: getReposFromDb,
-  getRepoById: getRepoByIdFromDb,
-  deleteRepo: deleteRepoFromDb,
-} = require('../services/repoService');
-const { fetchAllRepoData } = require('../services/githubService');
-const { calculatePowerScore, getDifficulty } = require('../services/powerScoreService');
+import {
+  addRepo as addRepoToDb,
+  getRepos as getReposFromDb,
+  getRepoById as getRepoByIdFromDb,
+  deleteRepo as deleteRepoFromDb,
+} from '../services/repoService.js';
+import { fetchAllRepoData } from '../services/githubService.js';
+import { calculatePowerScore, getDifficulty } from '../services/powerScoreService.js';
 
 /**
  * POST /api/repo
  * Submit a new GitHub repo URL for analysis
  */
-const addRepo = async (req, res, next) => {
+export const addRepo = async (req, res, next) => {
   try {
     const { url, category, subcategory } = req.body;
     if (!url) return res.status(400).json({ error: 'GitHub URL is required' });
@@ -48,12 +48,7 @@ const addRepo = async (req, res, next) => {
     next(err);
   }
 };
-
-/**
- * GET /api/repos
- * List all analyzed repos (supports ?sort=stars|forks|powerScore|createdAt)
- */
-const getRepos = async (req, res, next) => {
+export const getRepos = async (req, res, next) => {
   try {
     const { sort = 'createdAt', order = 'desc', search = '', category, subcategory } = req.query;
 
@@ -71,11 +66,8 @@ const getRepos = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/repo/:id
- * Get full details of a single repo
- */
-const getRepoById = async (req, res, next) => {
+
+export const getRepoById = async (req, res, next) => {
   try {
     const repo = await getRepoByIdFromDb(req.params.id);
     if (!repo) return res.status(404).json({ error: 'Repository not found' });
@@ -84,12 +76,7 @@ const getRepoById = async (req, res, next) => {
     next(err);
   }
 };
-
-/**
- * DELETE /api/repo/:id
- * Remove a repo from the database
- */
-const deleteRepo = async (req, res, next) => {
+export const deleteRepo = async (req, res, next) => {
   try {
     await deleteRepoFromDb(req.params.id);
     res.json({ message: 'Repository removed' });
@@ -100,5 +87,3 @@ const deleteRepo = async (req, res, next) => {
     next(err);
   }
 };
-
-module.exports = { addRepo, getRepos, getRepoById, deleteRepo };

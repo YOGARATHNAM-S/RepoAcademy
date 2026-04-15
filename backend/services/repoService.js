@@ -1,13 +1,9 @@
-const { supabase } = require('../config/firebase');
+import { supabase } from '../config/firebase.js';
 
 const REPOS_TABLE = 'repos';
 
-/**
- * Add a new repository to Supabase
- */
-async function addRepo(repoData) {
+export const addRepo = async (repoData) => {
   try {
-    // Check if repo already exists (by fullName)
     const { data: existing, error: fetchError } = await supabase
       .from(REPOS_TABLE)
       .select('*')
@@ -33,12 +29,10 @@ async function addRepo(repoData) {
   } catch (err) {
     throw new Error(`Failed to add repo: ${err.message}`);
   }
-}
+};
 
-/**
- * Get all repos with filtering and sorting
- */
-async function getRepos({ search = '', category, subcategory, sortField = 'created_at', sortOrder = 'desc' } = {}) {
+
+export const getRepos = async ({ search = '', category, subcategory, sortField = 'created_at', sortOrder = 'desc' } = {}) => {
   try {
     let query = supabase
       .from(REPOS_TABLE)
@@ -84,12 +78,12 @@ async function getRepos({ search = '', category, subcategory, sortField = 'creat
   } catch (err) {
     throw new Error(`Failed to fetch repos: ${err.message}`);
   }
-}
+};
 
 /**
  * Get a single repo by ID
  */
-async function getRepoById(id) {
+export const getRepoById = async (id) => {
   try {
     const { data: repo, error } = await supabase
       .from(REPOS_TABLE)
@@ -106,12 +100,12 @@ async function getRepoById(id) {
   } catch (err) {
     throw new Error(`Failed to fetch repo: ${err.message}`);
   }
-}
+};
 
 /**
  * Delete a repo by ID
  */
-async function deleteRepo(id) {
+export const deleteRepo = async (id) => {
   try {
     const { error } = await supabase
       .from(REPOS_TABLE)
@@ -123,12 +117,12 @@ async function deleteRepo(id) {
   } catch (err) {
     throw new Error(`Failed to delete repo: ${err.message}`);
   }
-}
+};
 
 /**
  * Update repo data
  */
-async function updateRepo(id, updates) {
+export const updateRepo = async (id, updates) => {
   try {
     const { data: updated, error } = await supabase
       .from(REPOS_TABLE)
@@ -145,12 +139,12 @@ async function updateRepo(id, updates) {
   } catch (err) {
     throw new Error(`Failed to update repo: ${err.message}`);
   }
-}
+};
 
 /**
- * Format Firestore data to match API expectations (camelCase)
+ * Format database data to match API expectations (camelCase)
  */
-function formatRepo(dbRepo) {
+const formatRepo = (dbRepo) => {
   if (!dbRepo) return null;
   return {
     id: dbRepo.id,
@@ -178,12 +172,12 @@ function formatRepo(dbRepo) {
     createdAt: dbRepo.created_at,
     updatedAt: dbRepo.updated_at,
   };
-}
+};
 
 /**
  * Format API data to database format (snake_case)
  */
-function formatRepoForInsert(apiRepo) {
+const formatRepoForInsert = (apiRepo) => {
   return {
     name: apiRepo.name,
     owner: apiRepo.owner,
@@ -207,12 +201,4 @@ function formatRepoForInsert(apiRepo) {
     subcategory: apiRepo.subcategory,
     ai_summary: apiRepo.aiSummary,
   };
-}
-
-module.exports = {
-  addRepo,
-  getRepos,
-  getRepoById,
-  deleteRepo,
-  updateRepo,
 };

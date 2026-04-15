@@ -1,10 +1,9 @@
-
-const axios = require('axios');
+import axios from 'axios';
 
 const GITHUB_API = 'https://api.github.com';
 
 // Common headers for all GitHub API requests (no token needed)
-const headers = {
+const GITHUB_HEADERS = {
   Accept: 'application/vnd.github.v3+json',
   'User-Agent': 'Repolearn-App',
 };
@@ -12,7 +11,7 @@ const headers = {
 /**
  * Parse a GitHub URL and return { owner, repo }
  */
-function parseGithubUrl(url) {
+export const parseGithubUrl = (url) => {
   try {
     const cleanUrl = url.replace(/\.git$/, '').replace(/\/$/, '');
     const match = cleanUrl.match(/github\.com\/([^/]+)\/([^/]+)/);
@@ -21,48 +20,45 @@ function parseGithubUrl(url) {
   } catch {
     throw new Error('Could not parse GitHub URL. Please use a valid format: https://github.com/owner/repo');
   }
-}
+};
 
-/**
- * Fetch core repository data
- */
-async function fetchRepoDetails(owner, repo) {
-  const { data } = await axios.get(`${GITHUB_API}/repos/${owner}/${repo}`, { headers });
+const fetchRepoDetails = async (owner, repo) => {
+  const { data } = await axios.get(`${GITHUB_API}/repos/${owner}/${repo}`, { headers: GITHUB_HEADERS });
   return data;
-}
+};
 
 /**
  * Fetch README content (decoded from base64)
  */
-async function fetchReadme(owner, repo) {
+const fetchReadme = async (owner, repo) => {
   try {
-    const { data } = await axios.get(`${GITHUB_API}/repos/${owner}/${repo}/readme`, { headers });
+    const { data } = await axios.get(`${GITHUB_API}/repos/${owner}/${repo}/readme`, { headers: GITHUB_HEADERS });
     return Buffer.from(data.content, 'base64').toString('utf-8');
   } catch {
     return '';
   }
-}
+};
 
 /**
  * Fetch language breakdown { JavaScript: 45000, Python: 12000 }
  */
-async function fetchLanguages(owner, repo) {
+const fetchLanguages = async (owner, repo) => {
   try {
-    const { data } = await axios.get(`${GITHUB_API}/repos/${owner}/${repo}/languages`, { headers });
+    const { data } = await axios.get(`${GITHUB_API}/repos/${owner}/${repo}/languages`, { headers: GITHUB_HEADERS });
     return data;
   } catch {
     return {};
   }
-}
+};
 
 /**
  * Fetch contributor count (paginated — returns total from last page link header)
  */
-async function fetchContributorCount(owner, repo) {
+const fetchContributorCount = async (owner, repo) => {
   try {
     const response = await axios.get(
       `${GITHUB_API}/repos/${owner}/${repo}/contributors?per_page=1&anon=true`,
-      { headers }
+      { headers: GITHUB_HEADERS }
     );
     const linkHeader = response.headers['link'] || '';
     // Parse last page number from Link header
@@ -73,27 +69,27 @@ async function fetchContributorCount(owner, repo) {
   } catch {
     return 0;
   }
-}
+};
 
 /**
  * Check if repo has "good first issue" labeled issues (beginner friendly)
  */
-async function fetchBeginnerFriendly(owner, repo) {
+const fetchBeginnerFriendly = async (owner, repo) => {
   try {
     const { data } = await axios.get(
       `${GITHUB_API}/repos/${owner}/${repo}/issues?labels=good+first+issue&per_page=1&state=open`,
-      { headers }
+      { headers: GITHUB_HEADERS }
     );
     return Array.isArray(data) && data.length > 0;
   } catch {
     return false;
   }
-}
+};
 
 /**
  * Fetch all GitHub data for a repo in parallel
  */
-async function fetchAllRepoData(githubUrl) {
+export const fetchAllRepoData = async (githubUrl) => {
   const { owner, repo } = parseGithubUrl(githubUrl);
 
   const [details, readme, languages, contributorCount, isBeginnerFriendly] = await Promise.all([
@@ -123,6 +119,4 @@ async function fetchAllRepoData(githubUrl) {
     readme,
     isBeginnerFriendly,
   };
-}
-
-module.exports = { fetchAllRepoData, parseGithubUrl };
+};

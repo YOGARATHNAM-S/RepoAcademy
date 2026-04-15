@@ -1,12 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import repoRoutes from './routes/repoRoutes.js';
+import commentRoutes from './routes/commentRoutes.js';
 
-// Initialize Supabase
-const { supabase } = require('./config/firebase');
-
-const repoRoutes = require('./routes/repoRoutes');
-const commentRoutes = require('./routes/commentRoutes');
+dotenv.config();
 
 const app = express();
 
@@ -27,7 +25,10 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 
-// Start server with Supabase ready
+// Export for Vercel serverless functions
+export default app;
+
+// Start server with Supabase ready (local development)
 const PORT = process.env.PORT || 5000;
 
 try {

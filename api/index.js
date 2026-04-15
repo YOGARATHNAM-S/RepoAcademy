@@ -19,15 +19,9 @@ if (!supabaseUrl || !supabaseKey) {
   console.log('✓ Supabase initialized successfully');
 }
 
-// Routes
-let repoRoutes, commentRoutes;
-
-try {
-  repoRoutes = require('../backend/routes/repoRoutes');
-  commentRoutes = require('../backend/routes/commentRoutes');
-} catch (err) {
-  console.error('Error loading routes:', err.message);
-}
+// Routes are ESM in backend, so load them via dynamic import from CJS.
+let repoRoutes = null;
+let commentRoutes = null;
 
 const app = express();
 
@@ -65,13 +59,23 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// API Routes
-if (repoRoutes) {
-  app.use('/', repoRoutes);
-}
-if (commentRoutes) {
-  app.use('/', commentRoutes);
-}
+const loadRoutes = async () => {
+  try {
+    const repoModule = await import('../backend/routes/repoRoutes.js');
+    const commentModule = await import('../backend/routes/commentRoutes.js');
+
+    repoRoutes = repoModule.default;
+    commentRoutes = commentModule.default;
+
+    // Keep same route prefix as backend/server.js.
+    app.use('/api', repoRoutes);
+    app.use('/api', commentRoutes);
+  } catch (err) {
+    console.error('Error loading routes:', err.message);
+  }
+};
+
+loadRoutes();
 
 // 404 handler
 app.use((req, res) => {
