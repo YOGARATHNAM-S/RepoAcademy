@@ -7,13 +7,17 @@ const { createClient } = require('@supabase/supabase-js');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('ERROR: Missing SUPABASE_URL or SUPABASE_KEY');
-  console.error('SUPABASE_URL:', supabaseUrl ? 'SET' : 'NOT SET');
-  console.error('SUPABASE_KEY:', supabaseKey ? 'SET' : 'NOT SET');
-}
+let supabase = null;
 
-const supabase = createClient(supabaseUrl || '', supabaseKey || '');
+if (!supabaseUrl || !supabaseKey) {
+  console.error('⚠️  WARNING: Missing SUPABASE_URL or SUPABASE_KEY');
+  console.error('   SUPABASE_URL:', supabaseUrl ? 'SET' : '❌ NOT SET');
+  console.error('   SUPABASE_KEY:', supabaseKey ? 'SET' : '❌ NOT SET');
+  console.error('   API will be in read-only mode');
+} else {
+  supabase = createClient(supabaseUrl, supabaseKey);
+  console.log('✓ Supabase initialized successfully');
+}
 
 // Routes
 let repoRoutes, commentRoutes;
@@ -29,7 +33,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://repoacademy.vercel.app', 'http://localhost:3000', 'http://localhost:5000'],
+  origin: ['https://repo-academy.vercel.app', 'http://localhost:3000', 'http://localhost:5000', 'http://127.0.0.1:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -45,6 +49,19 @@ app.get('/health', (req, res) => {
     app: 'RepoAcademy API',
     supabaseConnected: !!(supabaseUrl && supabaseKey),
     timestamp: new Date().toISOString()
+  });
+});
+
+// Endpoint to show setup status
+app.get('/api/status', (req, res) => {
+  res.json({ 
+    message: 'RepoAcademy API',
+    serviceStatus: 'online',
+    database: supabase ? 'connected' : 'disconnected',
+    environment: {
+      supabaseUrl: supabaseUrl ? '✓ Set' : '✗ Missing',
+      supabaseKey: supabaseKey ? '✓ Set' : '✗ Missing'
+    }
   });
 });
 
