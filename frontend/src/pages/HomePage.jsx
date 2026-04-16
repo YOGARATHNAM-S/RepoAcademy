@@ -5,37 +5,39 @@ import RepoSubmitForm from '../components/RepoSubmitForm';
 import RepoCard from '../components/RepoCard';
 import { fetchRepos } from '../services/api';
 
-const CATEGORIES = {
-  'DevOps': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'AIML': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'GenAI': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Software Development': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Cloud': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Books': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Data Science': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Cyber Security': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Interview Prep': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Frontend Development': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Backend Development': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Mobile Development': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Blockchain/Web3': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'IoT': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Kubernetes': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Game Development': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Quantum Computing': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Testing/QA': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'API Development': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Serverless': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Edge Computing': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'AR/VR': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Robotics': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Database/Storage': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'MLOps': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'DevSecOps': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Awesome websites': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Automation': ['Learning Repo', 'Project Repo', 'Open Source Repo'],
-  'Other': ['Learning Repo', 'Project Repo', 'Open Source Repo']
-};
+const REPO_TYPES = ['Learning Repo', 'Project Repo', 'Open Source Repo', 'Book Repo'];
+
+const CATEGORIES = Object.fromEntries([
+  'DevOps',
+  'AIML',
+  'GenAI',
+  'Software Development',
+  'Cloud',
+  'Books',
+  'Data Science',
+  'Cyber Security',
+  'Interview Prep',
+  'Frontend Development',
+  'Backend Development',
+  'Mobile Development',
+  'Blockchain/Web3',
+  'IoT',
+  'Kubernetes',
+  'Game Development',
+  'Quantum Computing',
+  'Testing/QA',
+  'API Development',
+  'Serverless',
+  'Edge Computing',
+  'AR/VR',
+  'Robotics',
+  'Database/Storage',
+  'MLOps',
+  'DevSecOps',
+  'Awesome websites',
+  'Automation',
+  'Other'
+].map((category) => [category, REPO_TYPES]));
 
 const SORT_OPTIONS = [
   { value: 'createdAt', label: '🕐 Newest' },
